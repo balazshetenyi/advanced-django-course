@@ -1,5 +1,5 @@
-from django.contrib.auth import authenticate, login
-from django.shortcuts import render
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, redirect
 
 from . import forms
 
@@ -22,3 +22,8 @@ def login_page(request):
                 message = "Invalid credentials"
                 
     return render(request, 'authentication/login.html', {'form': form, 'message': message})
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('login')
