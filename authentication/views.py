@@ -1,15 +1,21 @@
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
+from django.views.generic import View
 
 from . import forms
 
 
-def login_page(request):
-    form = forms.LoginForm()
-    message = ''
+class LoginPage(View):
+    form_class = forms.LoginForm
+    login_path = 'authentication/login.html'
     
-    if request.method == 'POST':
-        form = forms.LoginForm(request.POST)
+    def get(self, request):
+        form = self.form_class()
+        message = ''
+        return render(request, self.login_path, {'form': form, 'message': message})
+    
+    def post(self, request):
+        form = self.form_class(request.POST)
         if form.is_valid():
             user = authenticate(
                 username=form.cleaned_data['username'],
@@ -20,10 +26,9 @@ def login_page(request):
                 return redirect('home')
             else:
                 message = "Invalid credentials"
-                
-    return render(request, 'authentication/login.html', {'form': form, 'message': message})
+        return render(request, self.login_path, {'form': form, 'message': message})
 
 
-def logout_user(request):
-    logout(request)
-    return redirect('login')
+# def logout_user(request):
+#     logout(request)
+#     return redirect('login')
